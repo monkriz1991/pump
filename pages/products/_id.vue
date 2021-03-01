@@ -27,6 +27,7 @@
       const product = await $axios.$get('http://193.123.37.74:8000/catalog/product/'+params.id)
       //console.log(product)
       const items = []
+      items.push({src: product.img,thumbnail:product.img})
       for (let i of product.images){
         items.push({src: i.img,thumbnail:i.img})
       }
