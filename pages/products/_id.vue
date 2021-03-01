@@ -6,7 +6,7 @@
             <v-row>
               <v-col cols="5">
                 <vue-picture-swipe :items="items"></vue-picture-swipe>
-                <p @click="log_produxt()">{{product.img}}</p>
+                <p>{{product.img}}</p>
               </v-col>
               <v-col cols="7">
                 <h1>{{product.name}}</h1>
@@ -26,8 +26,12 @@
       async asyncData({$axios, params}){
       const product = await $axios.$get('http://193.123.37.74:8000/catalog/product/'+params.id)
       //console.log(product)
+      const items = []
+      for (let i of product.images){
+        items.push({src: i.img,thumbnail:i.img})
+      }
       const img = product.img
-     return {product,img}
+     return {product,img,items}
     },
     data() {
       return {
@@ -73,9 +77,7 @@
       //}
     },
     methods:{
-      log_produxt(){
-        console.log(this.product);
-      },
+     
     },
     created(){
       // this.imgSlide()
