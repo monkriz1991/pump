@@ -6,7 +6,7 @@
             <v-row>
               <v-col cols="5">
                 <vue-picture-swipe :items="items"></vue-picture-swipe>
-                <p>{{product.img}}</p>
+                <p @click="log_produxt()">{{product.img}}</p>
               </v-col>
               <v-col cols="7">
                 <h1>{{product.name}}</h1>
@@ -31,6 +31,7 @@
     },
     data() {
       return {
+        product:{},
         product_img:'',
         items: [{
           src: 'http://via.placeholder.com/600x400',
@@ -72,7 +73,9 @@
       //}
     },
     methods:{
-
+      log_produxt(){
+        console.log(this.product);
+      },
     },
     created(){
       // this.imgSlide()
