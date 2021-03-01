@@ -42,14 +42,14 @@
          <v-container>
             <div class="header-cat-container">
               <div 
-                v-for="n in 8"
-                :key="n"
+                v-for="(n,i) in category.results"
+                :key="i"
                 link
                 class="header-cat-link"
               >
                 <nuxt-link to="/catalog" >
                   <v-icon>fa-file-contract</v-icon>
-                  <span>категория {{ n }}</span>
+                  <span>{{ n.name }}</span>
                 </nuxt-link>
               </div>
 
@@ -63,13 +63,6 @@
 import ClickOutside from 'vue-click-outside'
 
   export default {
-    async asyncData({$axios}){
-        const data = await $axios.$get('http://193.123.37.74:8000/catalog/categories_second/')
-        console.log($axios)
-        const category = data.results
-        
-        return {category}
-    },
     data () {
       return {
         //menyHeader: false,
@@ -82,6 +75,12 @@ import ClickOutside from 'vue-click-outside'
         ],
       }
     },
+     async fetch(){
+        const data = await this.$axios.$get('http://193.123.37.74:8000/catalog/categories_second/')
+        console.log(data)
+        this.category = data
+    },
+    fetchKey: 'navbar',
     methods: {
       toggle () {
         this.opened = !this.opened 
@@ -92,10 +91,6 @@ import ClickOutside from 'vue-click-outside'
       // menyHeaderShow(){
       //   this.menyHeader = !this.menyHeader;
       // }
-    },
-    mounted () {
-      // prevent click outside event with popupItem.
-     // this.popupItem = this.$el
     },
  
     directives: {
