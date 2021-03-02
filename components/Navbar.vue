@@ -51,6 +51,7 @@
                   <v-icon>fa-file-contract</v-icon>
                   <span>{{ n.name }}</span>
                 </nuxt-link>
+               <span v-for="(c,k) in n.child" :key="k">{{c.name}}</span>
               </div>
 
             </div>
@@ -76,7 +77,7 @@ import ClickOutside from 'vue-click-outside'
       }
     },
      async fetch(){
-        const data = await this.$axios.$get('http://193.123.37.74:8000/catalog/categories_second/')
+        const data = await this.$axios.$get('/catalog/categories/')
         console.log(data)
         this.category = data
     },
