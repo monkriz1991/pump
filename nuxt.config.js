@@ -40,7 +40,8 @@ export default {
     '@nuxtjs/axios',
   ],
   axios: {
-    // proxy: true
+    proxy: false,
+    baseURL: "http://193.123.37.74:8000"
   },
   // Build Configuration (https://go.nuxtjs.dev/config-build)
   build: {

@@ -24,7 +24,7 @@
       return /\d+$/.test(params.id)
     },
       async asyncData({$axios, params}){
-      const product = await $axios.$get('http://193.123.37.74:8000/catalog/product/'+params.id)
+      const product = await $axios.$get('/catalog/product/'+params.id)
       //console.log(product)
       const items = []
       items.push({src: product.img,thumbnail:product.img})

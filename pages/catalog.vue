@@ -152,7 +152,7 @@ import VueContentLoading from 'vue-content-loading';
 export default {
   
     async asyncData({$axios}){
-        const product = await $axios.$get('http://193.123.37.74:8000/catalog/product/?limit=12&offset=12')
+        const product = await $axios.$get('/catalog/product/?limit=12&offset=12')
         const hachatgs = product.results
         const count_pages = product.count
         return {hachatgs,count_pages}
