@@ -78,7 +78,6 @@ import ClickOutside from 'vue-click-outside'
     },
      async fetch(){
         const data = await this.$axios.$get('/catalog/categories/')
-        console.log(data)
         this.category = data
     },
     fetchKey: 'navbar',
