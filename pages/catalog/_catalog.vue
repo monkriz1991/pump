@@ -9,27 +9,25 @@
       <v-row>
         <v-col cols="2">
             <div class="filter-catalog">
-              <v-list color="transparent">
+              <v-list color="transparent" v-if="filters">
                 <div
-                  v-for="n in 3"
+                  v-for="(cat,n) in filters"
                   :key="n"
                   link
                   class="checkbox-catalog-block"
                 >
                    <strong>
-                      Категория {{ n }}
+                      {{cat.name}}
                    </strong>
                     <div class="checkbox-catalog">
                       <v-checkbox
-                        label="orange"
+                        v-for="(podcat,n1) in cat.filter_value"
+                        :key="n1"
+                        v-model="enabled[n1]"
+                        :label="podcat.value"
                         color="orange"
-                        value="orange"
-                        hide-details
-                      ></v-checkbox>
-                      <v-checkbox
-                        label="orange"
-                        color="orange"
-                        value="orange"
+                        :value="podcat.id+'|||'+cat.id"
+                        @change="checkFilter(n1,podcat)"
                         hide-details
                       ></v-checkbox>
                     </div>
@@ -147,19 +145,20 @@
 
 
 <script>
-import axios from 'axios';
 import VueContentLoading from 'vue-content-loading';
 export default {
   
-    async asyncData({$axios}){
-        const product = await $axios.$get('/catalog/product/?limit=12&offset=12')
+    async asyncData({store, params}){
+        const product = await store.dispatch('products/getProductFromServer',{"limit":12,"offset":0,"cat":params.catalog});
+        const filters = await store.dispatch('categories/getsecondCategoryWithFilters',params.catalog);
         const hachatgs = product.results
         const count_pages = product.count
-        return {hachatgs,count_pages}
+        return {hachatgs,count_pages,params, filters}
     },
     data () {
       return {
           hachatgs:[],
+          enabled:[],
           page: 1,
           loading:true,
           count_page:'',
@@ -178,7 +177,7 @@ export default {
           href: '/catalog',
         },
       ],
-      url : 'http://193.123.37.74:8000/catalog/product/?limit=12&offset=',
+      url : '/catalog/product/?limit=12&offset=',
       }
     },
     components: {
@@ -198,22 +197,38 @@ export default {
         this.loading_desc = state
       },
       countPages(hachatgs){
-        this.count_page = Math.round(this.count_pages/12) 
+        this.count_page = Math.ceil(this.count_pages/12);
+        console.log(this.count_pages);
       },
-      nextPage(page){
-        const nextOffset = this.page*12
-          this.$axios.get(this.url+nextOffset).then((response) => {
-              this.hachatgs = response.data.results;
-             
-          });       
+      async nextPage(filter=[]){
+        const nextOffset = (this.page-1)*12   
+        let a = await this.$store.dispatch('products/getProductFromServer',{"limit":12,"offset":nextOffset,"cat":this.params.catalog,"filter":filter});
+        this.hachatgs = a.results;
+        this.count_pages = a.count;
+        this.countPages()
       },
-        // getHachtags(){
-        //     axios.get(this.url.hachatgs).then((response) => {
-        //         this.hachatgs = response.data;
-        //     })
-        // },
         openProduct(id){
             this.$router.push('/products/'+id)
+        },
+        checkFilter(e,f){
+          let filter = {};
+          let cartfilter = [];
+          for(let s of this.enabled){
+            if(typeof(s)!="string"){continue}
+            let after_split = s.split('|||');
+            cartfilter.push(after_split[0]);
+            if(filter[after_split[1]]==undefined){
+              filter[after_split[1]] =[]
+              filter[after_split[1]].push(Number.parseInt(after_split[0]));
+            }else{
+                filter[after_split[1]].push(Number.parseInt(after_split[0]));
+            }
+          }
+          let result = [];
+          for(let fil in filter){
+            result.push({"parent":fil,"list":filter[fil]});
+          }
+         this.nextPage(cartfilter);
         }
     },
     created() {
