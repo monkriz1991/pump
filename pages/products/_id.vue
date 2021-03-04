@@ -12,6 +12,8 @@
                 <h1>{{product.name}}</h1>
               </v-col>
             </v-row>
+
+            
           </div>
         </v-container>
     </v-main>
