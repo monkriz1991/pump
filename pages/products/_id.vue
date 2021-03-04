@@ -6,14 +6,20 @@
             <v-row>
               <v-col cols="5">
                 <vue-picture-swipe :items="items"></vue-picture-swipe>
-                <p>{{product.img}}</p>
+                <!-- <p>{{product.img}}</p> -->
               </v-col>
               <v-col cols="7">
-                <h1>{{product.name}}</h1>
+                <div class="tovar-content">
+                  <h1>{{product.name}}</h1>
+                  <div class="cart-brand">
+                    <span>Wavin Ekoplastik</span>
+                  </div>
+                  <div class="cart-price">
+                    <span>1.92</span><strong>руб./м</strong>
+                  </div>
+                </div>
               </v-col>
             </v-row>
-
-            
           </div>
         </v-container>
     </v-main>
@@ -23,32 +29,14 @@
   import VuePictureSwipe from '~/plugins/vue-picture-swipe';
   export default {
     validate({params}){
-      return /\d+$/.test(params.id)
+      return /^\d+$/.test(params.id)
     },
       async asyncData({$axios, params}){
       const product = await $axios.$get('http://193.123.37.74:8000/catalog/product/'+params.id)
-      //console.log(product)
-      const img = product.img
-     return {product,img}
-    },
-    data() {
-      return {
-        product_img:'',
-        items: [{
-          src: 'http://via.placeholder.com/600x400',
-          thumbnail: 'http://via.placeholder.com/120x120',
-          w: 600,
-          h: 400
-        },
-        {
-          src: 'http://via.placeholder.com/1200x900',
-          thumbnail: 'http://via.placeholder.com/64x64',
-          w: 1200,
-          h: 900
-        }
-      ],
-      items_top: [
-        {
+      const product_img = product.img
+      const bread_name = product.name
+      const items_top = []
+      items_top.push(        {
           text: 'Home',
           disabled: false,
           href: '/',
@@ -59,11 +47,24 @@
           href: '/catalog',
         },
         {
-            text: 'Catalog',
+            text: bread_name,
             disabled: false,
             href: '/catalog',
-          },
-      ],
+          })
+      const items = []
+      items.push({src: product.img,w: 600,h: 400,thumbnail:product.img,w: 600,h: 400})
+      for (let i of product.images){
+        items.push({src: i.img,thumbnail:i.img,w: 600,h: 400})
+      }
+
+     return {product,product_img,items,items_top}
+    },
+    data() {
+      return {
+        product_img:[],
+        items: [],
+        //bread_name:'',
+        items_top: [],
       }
     },
     mounted(){

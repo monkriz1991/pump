@@ -11,26 +11,23 @@
             <div class="filter-catalog">
               <v-list color="transparent">
                 <div
-                  v-for="n in 3"
-                  :key="n"
+                  v-for="(f,idx) in filter"
+                  :key="idx"
                   link
                   class="checkbox-catalog-block"
                 >
                    <strong>
-                      Категория {{ n }}
+                    {{ f.name }}
                    </strong>
                     <div class="checkbox-catalog">
                       <v-checkbox
-                        label="orange"
+                        v-for="chi in f.child"
+                        :key="chi.id"
+                        :label="chi.name"
                         color="orange"
-                        value="orange"
+                        :value="chi.id"
                         hide-details
-                      ></v-checkbox>
-                      <v-checkbox
-                        label="orange"
-                        color="orange"
-                        value="orange"
-                        hide-details
+                        @click.prevent="checkProduct(chi.id)"
                       ></v-checkbox>
                     </div>
 
@@ -109,15 +106,15 @@
                             </v-row>
                             </v-radio-group>
                             <div class="catalog-cart-calc">
-                              <v-text-field
-                                
-                                hide-details
-                                min="0"
-                                step="1"
-                                value="1"
-                                single-line
-                                type="number"
-                              />
+                              <vue-number-input 
+                                 
+                                :min="1" 
+                                :value="1"
+                                inline 
+                                size="small"
+                                controls
+                              >
+                              </vue-number-input>
                             </div>
                             <v-btn
                               depressed
@@ -134,13 +131,19 @@
 
     </v-container>
 
-    <v-pagination
-      v-model="page"
-      :length="count_page"
-      :total-visible="7"
-      @input="nextPage"
-    ></v-pagination>
-
+    <v-container>
+      <v-row>
+        <v-col cols="10" offset="2">
+          <v-pagination
+            class="pagination-catalog"
+            v-model="page"
+            :length="count_page"
+            :total-visible="7"
+            @input="nextPage"
+          ></v-pagination>
+        </v-col>
+      </v-row>
+    </v-container>
   </v-main>
 
 </template>
@@ -149,17 +152,25 @@
 <script>
 import axios from 'axios';
 import VueContentLoading from 'vue-content-loading';
+import VueNumberInput from '@chenfengyuan/vue-number-input';
 export default {
-  
-    async asyncData({$axios}){
+      validate({params}){
+        console.log(params.id)
+      return /^\d+$/.test(params.id)
+    },
+    async asyncData({$axios, params}){
         const product = await $axios.$get('http://193.123.37.74:8000/catalog/product/?limit=12&offset=12')
+        const category = await $axios.$get('http://193.123.37.74:8000/catalog/categories/'+params.id)
+        const filter = []
+        filter.push(category)
         const hachatgs = product.results
         const count_pages = product.count
-        return {hachatgs,count_pages}
+        return {hachatgs,count_pages,filter}
     },
     data () {
       return {
           hachatgs:[],
+          filter:[],
           page: 1,
           loading:true,
           count_page:'',
@@ -183,6 +194,7 @@ export default {
     },
     components: {
       VueContentLoading,
+      VueNumberInput,
     },
     mounted(){
       setTimeout(() =>{
@@ -206,6 +218,9 @@ export default {
               this.hachatgs = response.data.results;
              
           });       
+      },
+      checkProduct(id){
+        console.log(id)
       },
         // getHachtags(){
         //     axios.get(this.url.hachatgs).then((response) => {

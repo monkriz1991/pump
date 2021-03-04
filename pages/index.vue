@@ -61,6 +61,21 @@
         </v-col>
       </v-row>
     </v-container>
+
+
+    <v-container>
+      <v-row>
+        <div class="index-brand-container">
+          <div class="index-brand-item">
+            <a href="#">
+              <img :src="require('@/assets/img/logo.png')" alt="logo">
+              <div class="index-brand-item-bg"></div>
+            </a>
+          </div>
+        </div>
+      </v-row>
+    </v-container>
+
   </v-main>
 
 </template>
