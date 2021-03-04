@@ -3,7 +3,8 @@
     <div class="my-gallery" itemscope itemtype="http://schema.org/ImageGallery">
 
       <figure
-          class="gallery-thumbnail"
+         
+          :class="'gallery-thumbnail'+' thumbnail'+index"
           v-show="index === 0 || !singleThumbnail"
           itemprop="associatedMedia"
           itemscope
