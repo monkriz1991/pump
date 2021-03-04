@@ -8,7 +8,8 @@ export default {
       { hid: 'description', name: 'description', content: '' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700,800' },
     ]
   },
 
@@ -39,6 +40,7 @@ export default {
   modules: [
     '@nuxtjs/axios',
   ],
+
   axios: {
     // proxy: true
   },
@@ -50,8 +52,18 @@ export default {
     ],
   },
 
-  vuetify: {
-    defaultAssets: {icons: 'fa'}
+
+
+vuetify: {
+  treeShake: true,
+  defaultAssets: {
+    font: {
+      family: 'Montserrat'
+    },
+    icons: 'fa',
+  }
+
 }
+
 
 }
