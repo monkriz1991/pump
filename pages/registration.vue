@@ -9,7 +9,7 @@
                 <validation-provider
                     v-slot="{ errors }"
                     name="Name"
-                    rules="required|max:10"
+                    rules="required|max:20"
                 >
                     <v-text-field
                     v-model="name"
@@ -67,13 +67,14 @@
                 <validation-provider
                 >
                 <v-text-field
+                    v-model="password2"
                     :append-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'"
                     :rules="[rules.required, rules.min]"
                     :type="show2 ? 'text' : 'password'"
                     name="input-10-2"
-                    label="Visible"
+                    label="password2"
                     hint="At least 8 characters"
-                    value="wqfasds"
+                    value=""
                     class="input-group--focused"
                     @click:append="show2 = !show2"
                 ></v-text-field>
@@ -100,8 +101,8 @@
                     <v-checkbox
                     v-model="checkbox"
                     :error-messages="errors"
-                    value="1"
-                    label="Option"
+                    value='true'
+                    label="Согласны на условия конракта на душу"
                     type="checkbox"
                     required
                     ></v-checkbox>
@@ -165,6 +166,7 @@
       phoneNumber: '',
       email: '',
       password: '',
+      password2:'',
       show1: false,
       show2: false,
       select: null,
@@ -185,6 +187,28 @@
     methods: {
       submit () {
         this.$refs.observer.validate()
+        this.registerUser()
+      },
+       async registerUser(){
+         let registrationinfo = {
+          username: this.name,
+          password: this.password,
+          password2:this.password2
+         }
+            console.log(registrationinfo);
+            await this.$axios.post('registration/backend/registration/',registrationinfo).then(response => { 
+                console.log(response)
+            })
+            .catch(error => {
+                this.errors = [];
+                let str = "";
+                for(let i in error.response.data){
+                    for (let s of error.response.data[i]){
+                        str += `${i}: ${s}`;
+                        this.errors.push(`${i}: ${s}`);
+                    }
+                }
+            });    
       },
       clear () {
         this.name = ''
