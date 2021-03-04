@@ -32,6 +32,7 @@
       return /^\d+$/.test(params.id)
     },
       async asyncData({$axios, params}){
+
       const product = await $axios.$get('http://193.123.37.74:8000/catalog/product/'+params.id)
       const product_img = product.img
       const bread_name = product.name
@@ -75,7 +76,7 @@
       //}
     },
     methods:{
-
+     
     },
     created(){
       // this.imgSlide()

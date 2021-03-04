@@ -39,11 +39,41 @@ export default {
   // Modules (https://go.nuxtjs.dev/config-modules)
   modules: [
     '@nuxtjs/axios',
+    '@nuxtjs/auth-next',
   ],
 
   axios: {
-    // proxy: true
+    proxy: false,
+    baseURL: "http://193.123.37.74:8000"
   },
+
+  auth: {
+    strategies: {
+      local: {
+        token: {
+          property: 'token',
+           type: 'Token'
+        },
+        user: {
+          property: '',
+        },
+        endpoints: {
+          login: { url: '/signin/backend/signin/', method: 'post', propertyName: 'token' },
+          logout: false,
+          user: { url: '/users/mydata/', method: 'get' }
+        },
+        // tokenRequired: true,
+        tokenType: '',
+      },
+    },
+    redirect: {
+      home: false,
+      callback: false,
+      logout: false
+    }
+  },
+
+
   // Build Configuration (https://go.nuxtjs.dev/config-build)
   build: {
     transpile: [

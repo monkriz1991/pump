@@ -42,15 +42,19 @@
          <v-container>
             <div class="header-cat-container">
               <div 
+
                 v-for="(n,i) in category.results"
+
                 :key="i"
                 link
                 class="header-cat-link"
               >
+
                 <a href="#"  @click.prevent="openCategory(n.id)">
                   <v-icon>fa-file-contract</v-icon>
                   <span>{{ n.name }}</span>
                 </a>
+
               </div>
 
             </div>
@@ -61,12 +65,11 @@
 
 <script>
 import ClickOutside from 'vue-click-outside'
-
   export default {
     data () {
       return {
+        category:[],
         //menyHeader: false,
-        category: [],
         opened: false,
         links: [
           // { title: 'Каталог', path: ''},
@@ -75,6 +78,7 @@ import ClickOutside from 'vue-click-outside'
         ],
       }
     },
+
     async fetch(){
         const data = await this.$axios.$get('http://193.123.37.74:8000/catalog/categories/')
         this.category = data
