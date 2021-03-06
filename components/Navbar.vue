@@ -16,7 +16,7 @@
           Товары
            <v-icon>{{ opened ? 'fa-times' : 'fa-bars' }}</v-icon>
         </v-btn>
-
+        <v-btn  v-if="$auth.loggedIn && $auth.user.is_superuser" to="/admin-panel">admin panel</v-btn>
         <v-btn
           v-for="(link, idx) in links"
           :key="idx"
@@ -24,16 +24,18 @@
           text class="btn-header-link"
         > {{ link.title }}
         </v-btn>
+        
 
         <v-spacer></v-spacer>
-
-        <!-- <v-btn depressed to="/registration">
+        <div v-if="$auth.loggedIn">
+            <menuuser />
+        </div>
+            <div v-else>
+        <v-btn depressed to="/registration">
             Регистрация
-        </v-btn> -->
-        <v-btn depressed to="/login">
-            Вход
-        </v-btn>
-
+        </v-btn >
+       <no-ssr> <v-btn ><logindialog /> </v-btn></no-ssr>
+            </div>
       </v-container>
       <div 
         v-show="opened" 
@@ -61,11 +63,18 @@
           </v-container>
       </div>
     </v-app-bar>
-</template>>
+</template>
 
 <script>
 import ClickOutside from 'vue-click-outside'
+import logindialog from '@/components/modal/login_dialog.vue'
+import menuuser from '@/components/user/menu_user.vue'
+
   export default {
+    components:{
+      logindialog,
+      menuuser,
+    },
     data () {
       return {
         category:[],
@@ -101,6 +110,7 @@ import ClickOutside from 'vue-click-outside'
     mounted () {
       // prevent click outside event with popupItem.
      // this.popupItem = this.$el
+     console.log(this.$auth.user);
     },
  
     directives: {
