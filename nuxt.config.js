@@ -67,7 +67,8 @@ export default {
       },
     },
     redirect: {
-      home: false,
+      login: '/',
+      home: '/',
       callback: false,
       logout: false
     }
