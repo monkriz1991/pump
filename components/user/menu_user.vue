@@ -2,14 +2,11 @@
   <div class="text-center">
     <v-menu offset-y>
       <template v-slot:activator="{ on, attrs }">
-        <v-btn
-          color="primary"
-          dark
-          v-bind="attrs"
-          v-on="on"
-        >
-          {{$auth.user.username}}
-        </v-btn>
+
+        <v-avatar  v-bind="attrs" v-on="on" color="primary" size="60">
+            <img v-if="$auth.user.img" :src="$auth.user.img">
+            <div v-else>{{avatar_}}</div>
+        </v-avatar>
       </template>
       <v-list>
         <v-list-item
@@ -28,13 +25,23 @@
     data: () => ({
       items: [
       ],
+       avatar_:'',
     }),
     mounted(){
+        this.items.push({ title: 'кабинет' ,method:this.goToCabinet });
         this.items.push({ title: 'logout' ,method:this.logout });
+        if(this.$auth.user.first_name != '' && this.$auth.user.last_name != ''){
+            this.avatar_ = this.$auth.user.first_name[0]+""+this.$auth.user.last_name[0];
+        }else{
+            this.avatar_ = "NN";
+        }
     },
     methods:{
         logout(){
             this.$auth.logout();
+        },
+        goToCabinet(){
+            this.$router.push('/cabinet/')
         }
     },
   }

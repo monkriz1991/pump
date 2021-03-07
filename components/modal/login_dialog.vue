@@ -42,6 +42,6 @@ export default {
     components:{
         login,
     },
-    props:['dialog_show']
+    props:['dialog_show'],
 }
 </script>
