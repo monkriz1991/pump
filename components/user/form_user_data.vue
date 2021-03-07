@@ -37,6 +37,10 @@
         </v-col>
       </v-row>
       <v-row>
+          <v-col
+          cols="12"
+          md="5"
+        >
            <v-textarea
           solo
           @change="update_param"
@@ -44,19 +48,37 @@
           label="Описание"
           v-model="description"
         ></v-textarea>
-      </v-row>
+          </v-col>
+          <v-col
+          cols="12"
+          md="5"
+        >
+          <v-row justify="center">
+    <v-date-picker v-model="picker"></v-date-picker>
+          </v-row>
+    </v-col>
+  </v-row>
     </v-container>
+    <snackbar :snackbar="show_snackbar" v-on:requestClose="close" :text="text_snackbar" />
   </v-form>
+  
 </template>
 
 
 
 <script>
+import snackbar from '@/components/modal/snackbar.vue'
   export default {
+      components:{
+          snackbar
+      },
     data: () => ({
+        show_snackbar:false,
+        text_snackbar:'',
       valid: false,
       avatar_:'',
       firstname: '',
+      picker: '',
       lastname: '',
       description:'',
       nameRules: [
@@ -68,16 +90,30 @@
         this.firstname = this.$auth.user.first_name;
         this.lastname = this.$auth.user.last_name;
         this.description = this.$auth.user.description;
+        this.picker = this.$auth.user.birth_date;
     },
     methods:{
-        update_param(){
+        close(){},
+        async update_param(e){
+            console.log(e);
+            if (typeof(e) != "Object" || e.keyCode === 13) {
+                console.log(this.picker);
             let data = {
                 first_name:this.firstname,
                 last_name:this.lastname,
                 description:this.description,
+                birth_date:this.picker,
             }
-            this.$axios.put(`http://193.123.37.74:8000/users/mydata/${this.$auth.user.id}/`, data);
-        }
+            let res = await this.$axios.put(`http://193.123.37.74:8000/users/mydata/${this.$auth.user.id}/`, data)
+            if(res.status=='200'){
+                     this.text_snackbar = "Параметр изменен";
+                    this.show_snackbar = true;
+            }else{
+                        this.text_snackbar = "Параметр не изменен";
+                    this.show_snackbar = true;
+            }
+        }   
+            }
     },
   }
 </script>
