@@ -29,5 +29,9 @@ export default {
             store.commit('setCategoreis', data.results)
             return data.results;
         },
+        async getCatWithSecondCat(store,id){
+          let data = await this.$axios.$get(`/catalog/categories/${id}/`);
+          return data.child;
+        }
   }
 }

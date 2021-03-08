@@ -21,15 +21,29 @@
                    </strong>
                     <div class="checkbox-catalog">
                       <v-checkbox
-                        v-for="(podcat,n1) in cat.filter_value"
-                        :key="n1"
-                        v-model="enabled[n1]"
+                        v-model="enabled[n]"
+                        :label="cat.name"
+                        color="orange"
+                        :value="cat.id"
+                        @change="checkFilter(n,cat)"
+                        hide-details
+                      ></v-checkbox>
+                      <hr>
+                      <div  v-for="(filter,n1) in cat.filters" :key="n1">
+                        <strong>
+                      {{filter.name}}
+                   </strong>
+                      <v-checkbox
+                        v-for="(podcat,n2) in filter.filter_value"
+                        :key="n2"
+                        v-model="enabled_filter[n2]"
                         :label="podcat.value"
                         color="orange"
                         :value="podcat.id+'|||'+cat.id"
-                        @change="checkFilter(n1,podcat)"
+                        @change="checkFilterCat(n2,podcat)"
                         hide-details
                       ></v-checkbox>
+                      </div>
                     </div>
 
                 </div>
@@ -150,7 +164,8 @@ export default {
   
     async asyncData({store, params}){
         const product = await store.dispatch('products/getProductFromServer',{"limit":12,"offset":0,"cat":params.catalog});
-        const filters = await store.dispatch('categories/getsecondCategoryWithFilters',params.catalog);
+        //const filters = await store.dispatch('categories/getsecondCategoryWithFilters',params.catalog);
+        const filters = await store.dispatch('categories/getCatWithSecondCat',params.catalog);
         const hachatgs = product.results
         const count_pages = product.count
         return {hachatgs,count_pages,params, filters}
@@ -159,6 +174,7 @@ export default {
       return {
           hachatgs:[],
           enabled:[],
+          enabled_filter:[],
           page: 1,
           loading:true,
           count_page:'',
@@ -200,9 +216,9 @@ export default {
         this.count_page = Math.ceil(this.count_pages/12);
         console.log(this.count_pages);
       },
-      async nextPage(filter=[]){
+      async nextPage(z = {second_cat:[],filter:[]}){
         const nextOffset = (this.page-1)*12   
-        let a = await this.$store.dispatch('products/getProductFromServer',{"limit":12,"offset":nextOffset,"cat":this.params.catalog,"filter":filter});
+        let a = await this.$store.dispatch('products/getProductFromServer',{"limit":12,"offset":nextOffset,"cat":this.params.catalog,"second_cat":z.second_cat,"filter":z.filter});
         this.hachatgs = a.results;
         this.count_pages = a.count;
         this.countPages()
@@ -211,9 +227,23 @@ export default {
             this.$router.push('/products/'+id)
         },
         checkFilter(e,f){
+          this.page = 1;
           let filter = {};
           let cartfilter = [];
           for(let s of this.enabled){
+            if(s!=null){
+                 cartfilter.push(s);
+            }
+           
+          }
+          
+         this.nextPage({second_cat:cartfilter,filter:[]});
+        },
+         checkFilterCat(e,f){
+           this.page = 1;
+          let filter = {};
+          let cartfilter = [];
+          for(let s of this.enabled_filter){
             if(typeof(s)!="string"){continue}
             let after_split = s.split('|||');
             cartfilter.push(after_split[0]);
@@ -228,7 +258,7 @@ export default {
           for(let fil in filter){
             result.push({"parent":fil,"list":filter[fil]});
           }
-         this.nextPage(cartfilter);
+         this.nextPage({second_cat:[],filter:cartfilter});
         }
     },
     created() {
