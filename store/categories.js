@@ -31,7 +31,6 @@ export default {
         },
         async getCatWithSecondCat(store,id){
           let data = await this.$axios.$get(`/catalog/categories/${id}/`);
-          console.log(data);
           return data.child;
         }
   }

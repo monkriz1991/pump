@@ -35,6 +35,12 @@ export default {
         if( q['second_cat'] !=undefined && q['second_cat'].length){
             url += `&cat_second=${JSON.stringify(q['second_cat'])}`;
         }
+        if( q['second_cat'] !=undefined && q['second_cat'].length){
+          url += `&cat_second=${JSON.stringify(q['second_cat'])}`;
+      }
+      if( q['filter'] !=undefined && q['filter'].length){
+        url += `&card_filter=${JSON.stringify(q['filter'])}`;
+      }
         console.log(url);
         let data = await this.$axios.$get(url);
         

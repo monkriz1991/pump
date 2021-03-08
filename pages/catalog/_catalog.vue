@@ -29,6 +29,21 @@
                         hide-details
                       ></v-checkbox>
                       <hr>
+                      <div  v-for="(filter,n1) in cat.filters" :key="n1">
+                        <strong>
+                      {{filter.name}}
+                   </strong>
+                      <v-checkbox
+                        v-for="(podcat,n2) in filter.filter_value"
+                        :key="n2"
+                        v-model="enabled_filter[n2]"
+                        :label="podcat.value"
+                        color="orange"
+                        :value="podcat.id+'|||'+cat.id"
+                        @change="checkFilterCat(n2,podcat)"
+                        hide-details
+                      ></v-checkbox>
+                      </div>
                     </div>
 
                 </div>
@@ -159,6 +174,7 @@ export default {
       return {
           hachatgs:[],
           enabled:[],
+          enabled_filter:[],
           page: 1,
           loading:true,
           count_page:'',
@@ -200,9 +216,9 @@ export default {
         this.count_page = Math.ceil(this.count_pages/12);
         console.log(this.count_pages);
       },
-      async nextPage(second_cat=[]){
+      async nextPage(z = {second_cat:[],filter:[]}){
         const nextOffset = (this.page-1)*12   
-        let a = await this.$store.dispatch('products/getProductFromServer',{"limit":12,"offset":nextOffset,"cat":this.params.catalog,"second_cat":second_cat});
+        let a = await this.$store.dispatch('products/getProductFromServer',{"limit":12,"offset":nextOffset,"cat":this.params.catalog,"second_cat":z.second_cat,"filter":z.filter});
         this.hachatgs = a.results;
         this.count_pages = a.count;
         this.countPages()
@@ -211,6 +227,7 @@ export default {
             this.$router.push('/products/'+id)
         },
         checkFilter(e,f){
+          this.page = 1;
           let filter = {};
           let cartfilter = [];
           for(let s of this.enabled){
@@ -220,7 +237,28 @@ export default {
            
           }
           
-         this.nextPage(cartfilter);
+         this.nextPage({second_cat:cartfilter,filter:[]});
+        },
+         checkFilterCat(e,f){
+           this.page = 1;
+          let filter = {};
+          let cartfilter = [];
+          for(let s of this.enabled_filter){
+            if(typeof(s)!="string"){continue}
+            let after_split = s.split('|||');
+            cartfilter.push(after_split[0]);
+            if(filter[after_split[1]]==undefined){
+              filter[after_split[1]] =[]
+              filter[after_split[1]].push(Number.parseInt(after_split[0]));
+            }else{
+                filter[after_split[1]].push(Number.parseInt(after_split[0]));
+            }
+          }
+          let result = [];
+          for(let fil in filter){
+            result.push({"parent":fil,"list":filter[fil]});
+          }
+         this.nextPage({second_cat:[],filter:cartfilter});
         }
     },
     created() {
