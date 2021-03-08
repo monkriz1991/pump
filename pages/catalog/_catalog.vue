@@ -21,15 +21,14 @@
                    </strong>
                     <div class="checkbox-catalog">
                       <v-checkbox
-                        v-for="(podcat,n1) in cat.filter_value"
-                        :key="n1"
-                        v-model="enabled[n1]"
-                        :label="podcat.value"
+                        v-model="enabled[n]"
+                        :label="cat.name"
                         color="orange"
-                        :value="podcat.id+'|||'+cat.id"
-                        @change="checkFilter(n1,podcat)"
+                        :value="cat.id"
+                        @change="checkFilter(n,cat)"
                         hide-details
                       ></v-checkbox>
+                      <hr>
                     </div>
 
                 </div>
@@ -150,7 +149,8 @@ export default {
   
     async asyncData({store, params}){
         const product = await store.dispatch('products/getProductFromServer',{"limit":12,"offset":0,"cat":params.catalog});
-        const filters = await store.dispatch('categories/getsecondCategoryWithFilters',params.catalog);
+        //const filters = await store.dispatch('categories/getsecondCategoryWithFilters',params.catalog);
+        const filters = await store.dispatch('categories/getCatWithSecondCat',params.catalog);
         const hachatgs = product.results
         const count_pages = product.count
         return {hachatgs,count_pages,params, filters}
@@ -200,9 +200,9 @@ export default {
         this.count_page = Math.ceil(this.count_pages/12);
         console.log(this.count_pages);
       },
-      async nextPage(filter=[]){
+      async nextPage(second_cat=[]){
         const nextOffset = (this.page-1)*12   
-        let a = await this.$store.dispatch('products/getProductFromServer',{"limit":12,"offset":nextOffset,"cat":this.params.catalog,"filter":filter});
+        let a = await this.$store.dispatch('products/getProductFromServer',{"limit":12,"offset":nextOffset,"cat":this.params.catalog,"second_cat":second_cat});
         this.hachatgs = a.results;
         this.count_pages = a.count;
         this.countPages()
@@ -214,20 +214,12 @@ export default {
           let filter = {};
           let cartfilter = [];
           for(let s of this.enabled){
-            if(typeof(s)!="string"){continue}
-            let after_split = s.split('|||');
-            cartfilter.push(after_split[0]);
-            if(filter[after_split[1]]==undefined){
-              filter[after_split[1]] =[]
-              filter[after_split[1]].push(Number.parseInt(after_split[0]));
-            }else{
-                filter[after_split[1]].push(Number.parseInt(after_split[0]));
+            if(s!=null){
+                 cartfilter.push(s);
             }
+           
           }
-          let result = [];
-          for(let fil in filter){
-            result.push({"parent":fil,"list":filter[fil]});
-          }
+          
          this.nextPage(cartfilter);
         }
     },
