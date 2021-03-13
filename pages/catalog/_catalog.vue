@@ -123,12 +123,13 @@
                             </v-radio-group>
                             <div class="catalog-cart-calc">
                               <v-text-field
-                                
+                                v-model="n.counter_cart"
                                 hide-details
                                 min="0"
                                 step="1"
-                                value="1"
-                                :max="n.selected_child? n.product.find(x=>x.id==n.selected_child)['count']: '0'"
+                                :value="n.counter_cart?n.counter_cart:n.counter_cart=1"
+                                :mandatory="true"
+                                :max="n.selected_child?n.product.find(x=>x.id==n.selected_child)['count']: '0'"
                                 single-line
                                 type="number"
                               />
@@ -136,7 +137,7 @@
                             <v-btn
                               depressed
                               small
-                              @click="sendToCart(this,n.id)"
+                              @click="sendToCart(n.id,n.selected_child)"
                             >В корзину</v-btn>
                           </div>
                         </div>
@@ -272,9 +273,14 @@ export default {
         /**
          * добавление товара в корзину
          */
-        sendToCart(id){
-          let res = this.hachatgs.find(x=>x.id==id);
-          this.$store.commit('cart/addCart',res);
+        sendToCart(cardid,productid){
+          let copied =  JSON.parse(JSON.stringify(this.hachatgs)); // глубокое копированиек объекта
+          let card = copied.find(x=>x.id==cardid);
+          var filtered = card.product.filter(function(value, index, arr){ 
+              return value.id == productid;
+          });
+          card.product = filtered;
+          this.$store.commit('cart/addCart',card);
         }
     },
     created() {
