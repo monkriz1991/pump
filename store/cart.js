@@ -51,7 +51,7 @@ export default {
         let carts=getCartFromLocalStorage();
         carts.push(cart);
         state.carts = carts;
-        state.counter = state.cart.length;
+        state.counter = carts.length;
         setCartToLocalStorage(state.carts);
     },
     /**
