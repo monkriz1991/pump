@@ -24,7 +24,28 @@
           text class="btn-header-link"
         > {{ link.title }}
         </v-btn>
+
+
+ <v-spacer></v-spacer>
+
+         <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+               <v-badge
+          color="red"
+          v-bind:content="counter"
+           v-bind:value="(counter>0)?true:false"
+        >
+        <v-icon 
+        @click="modal_cart = true" 
+         v-bind="attrs"
+          v-on="on"
+        >
+        fas fa-shopping-cart</v-icon>
         
+               </v-badge>
+            </template>
+             <span>Корзина товаров</span>
+         </v-tooltip>
 
         <v-spacer></v-spacer>
         <div v-if="$auth.loggedIn">
@@ -78,6 +99,7 @@ import menuuser from '@/components/user/menu_user.vue'
     data () {
       return {
         category:[],
+        modal_cart:false,
         //menyHeader: false,
         opened: false,
         links: [
@@ -110,9 +132,13 @@ import menuuser from '@/components/user/menu_user.vue'
     mounted () {
       // prevent click outside event with popupItem.
      // this.popupItem = this.$el
-     console.log(this.$auth.user);
+     console.log(this.$store.state.cart.counter,'---------');
     },
- 
+    computed: {
+    counter () {
+      return this.$store.state.cart.counter
+    }
+  },
     directives: {
       ClickOutside
     }
