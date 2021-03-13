@@ -240,7 +240,7 @@ export default {
         let a = await this.$store.dispatch('products/getProductFromServer',{"limit":12,"offset":nextOffset,"cat":this.params.catalog,"second_cat":z.second_cat,"filter":z.filter});
         this.hachatgs = a.results;
         this.count_pages = a.count;
-        history.pushState(null, null, window.location.protocol + '//' + window.location.host + window.location.pathname+`?page=${this.page}${z.second_cat?`&cat_second=${JSON.stringify(z.second_cat)}`:''}`);
+        history.pushState(null, null, window.location.protocol + '//' + window.location.host + window.location.pathname+`?page=${this.page}${z.second_cat && z.second_cat.length?`&cat_second=${JSON.stringify(z.second_cat)}`:''}`);
         this.countPages()
       },
       /**
@@ -299,6 +299,10 @@ export default {
               return value.id == productid;
           });
           card.product = filtered;
+          if(!card.length){
+            alert("Товар отсутсвует");
+            return;
+          }
           if(card.counter_cart=="0"){
               alert("Выберите количество больше нуля");
               return;
