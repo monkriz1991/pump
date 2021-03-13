@@ -139,7 +139,7 @@
                               depressed
                               small
                               @click="sendToCart(n.id,n.selected_child)"
-                            >В корзину</v-btn>
+                            >В корзину <v-icon small>fa-cart-plus</v-icon></v-btn>
                           </div>
                         </div>
                         </v-sheet>
