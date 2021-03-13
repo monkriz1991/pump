@@ -184,6 +184,7 @@ export default {
     },
     data () {
       return {
+        second_cat:[],
           hachatgs:[],
           enabled:[],
           enabled_filter:[],
@@ -229,6 +230,11 @@ export default {
         console.log(this.count_pages);
       },
       async nextPage(z = {second_cat:[],filter:[]}){
+        if(z['second_cat'] == undefined){
+          z = {second_cat:[],filter:[]};
+          console.log(this.$route);
+          z.second_cat = this.second_cat;
+        }
         const nextOffset = (this.page-1)*12   
         let a = await this.$store.dispatch('products/getProductFromServer',{"limit":12,"offset":nextOffset,"cat":this.params.catalog,"second_cat":z.second_cat,"filter":z.filter});
         this.hachatgs = a.results;
@@ -255,7 +261,7 @@ export default {
             }
            
           }
-          
+          this.second_cat = cartfilter;
          this.nextPage({second_cat:cartfilter,filter:[]});
         },
         /**
@@ -280,7 +286,7 @@ export default {
           for(let fil in filter){
             result.push({"parent":fil,"list":filter[fil]});
           }
-         this.nextPage({second_cat:[],filter:cartfilter});
+         this.nextPage({second_cat:this.second_cat,filter:cartfilter});
         },
         /**
          * добавление товара в корзину с валидацией
@@ -308,7 +314,7 @@ export default {
         }
     },
     created() {
-        // this.getHachtags()
+       this.second_cat = this.$route.query.cat_second?JSON.parse(this.$route.query.cat_second):[];
         this.countPages()
     }
   }
