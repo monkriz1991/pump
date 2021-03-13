@@ -29,6 +29,12 @@ function getCartFromLocalStorage(){
     }
  }
 
+
+function counterUpdate(state){
+    let carts=getCartFromLocalStorage();
+        return carts.length;
+ }
+
 export default {
     namespaced: true,
   
@@ -37,9 +43,11 @@ export default {
     counter:0,
   }),
   getters: {
-
   },
  mutations : {
+    getCounterCart(state){
+        state.counter = counterUpdate();
+    },
      /**
       * 
       * метод добавяет в карзину товар

@@ -90,6 +90,7 @@
 import ClickOutside from 'vue-click-outside'
 import logindialog from '@/components/modal/login_dialog.vue'
 import menuuser from '@/components/user/menu_user.vue'
+import { mapGetters } from "vuex";
 
   export default {
     components:{
@@ -130,14 +131,12 @@ import menuuser from '@/components/user/menu_user.vue'
       // }
     },
     mounted () {
-      // prevent click outside event with popupItem.
-     // this.popupItem = this.$el
-     console.log(this.$store.state.cart.counter,'---------');
+     this.$store.commit('cart/getCounterCart');
     },
     computed: {
     counter () {
       return this.$store.state.cart.counter
-    }
+    },
   },
     directives: {
       ClickOutside
