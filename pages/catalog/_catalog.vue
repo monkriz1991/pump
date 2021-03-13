@@ -118,6 +118,7 @@
                                 :key="i"
                                 :label="`${cd.name} ${cd.price}`"
                                 :value="cd.id"
+                                :disabled="cd.count?false:true"
                               ></v-radio>
                             </v-row>
                             </v-radio-group>
