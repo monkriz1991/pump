@@ -41,6 +41,7 @@
                   <div class="nothing">Ничего не добавлено</div>
                   
                     
+                    
               </v-row>
               </div>
           <v-card-text>
