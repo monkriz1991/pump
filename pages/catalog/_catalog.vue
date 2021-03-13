@@ -166,12 +166,14 @@
 import VueContentLoading from 'vue-content-loading';
 export default {
   
-    async asyncData({store, params}){
-        const product = await store.dispatch('products/getProductFromServer',{"limit":12,"offset":0,"cat":params.catalog});
+    async asyncData({store, params,route}){
+        let page = route.query.page?parseInt(route.query.page):1;
+        let offset = (page-1)*12;
+        const product = await store.dispatch('products/getProductFromServer',{"limit":12,"offset":offset,"cat":params.catalog});
         const filters = await store.dispatch('categories/getCatWithSecondCat',params.catalog);
         const hachatgs = product.results
         const count_pages = product.count
-        return {hachatgs,count_pages,params, filters}
+        return {hachatgs,count_pages,params, filters, page}
     },
     data () {
       return {
@@ -224,7 +226,7 @@ export default {
         let a = await this.$store.dispatch('products/getProductFromServer',{"limit":12,"offset":nextOffset,"cat":this.params.catalog,"second_cat":z.second_cat,"filter":z.filter});
         this.hachatgs = a.results;
         this.count_pages = a.count;
-        document.location.replace( window.location.protocol + '//' + window.location.host + window.location.pathname+`?cat_second=${JSON.stringify(z.second_cat)}`);
+        history.pushState(null, null, window.location.protocol + '//' + window.location.host + window.location.pathname+`?page=${this.page}${z.second_cat?`&cat_second=${JSON.stringify(z.second_cat)}`:''}`);
         this.countPages()
       },
       /**
