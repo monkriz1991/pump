@@ -167,13 +167,20 @@ import VueContentLoading from 'vue-content-loading';
 export default {
   
     async asyncData({store, params,route}){
+      let enabled=[];
         let page = route.query.page?parseInt(route.query.page):1;
+        let cat_second = route.query.cat_second?JSON.parse(route.query.cat_second):[];
         let offset = (page-1)*12;
-        const product = await store.dispatch('products/getProductFromServer',{"limit":12,"offset":offset,"cat":params.catalog});
+        const product = await store.dispatch('products/getProductFromServer',{"limit":12,"offset":offset,"cat":params.catalog,"second_cat":cat_second});
         const filters = await store.dispatch('categories/getCatWithSecondCat',params.catalog);
+        for(let f in filters){
+          if(cat_second.includes(filters[f].id)){
+            enabled[f] = filters[f].id;
+          }
+        }
         const hachatgs = product.results
         const count_pages = product.count
-        return {hachatgs,count_pages,params, filters, page}
+        return {hachatgs,count_pages,params, filters, page, enabled}
     },
     data () {
       return {
