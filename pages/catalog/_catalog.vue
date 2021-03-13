@@ -299,7 +299,7 @@ export default {
               return value.id == productid;
           });
           card.product = filtered;
-          if(!card.length){
+          if(!card.product.length){
             alert("Товар отсутсвует");
             return;
           }
