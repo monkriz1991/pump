@@ -37,7 +37,7 @@ function counterUpdate(state){
 
 export default {
     namespaced: true,
-  
+    strict:true,
     state: () => ({
     carts: [],
     counter:0,
@@ -68,9 +68,22 @@ export default {
      * @param {*} id идкнтификатор товара
      */
     delCart(state, id){
+        console.log(id);
         state.carts=getCartFromLocalStorage();
-        state.carts=state.cart.filter(x=>x.id!=id);
-        state.counter = state.cart.length;
+        state.carts=state.carts.filter(x=>x.product[0].id!=id);
+        state.counter = state.carts.length;
+        setCartToLocalStorage(state.carts);
+    },
+    /**
+     * мутация обновления в хранилище карточек
+     * 
+     * @param {object} state 
+     */
+    updateCarts(state){
+        state.carts=getCartFromLocalStorage();
+    },
+    updateCart(state,cart){
+        state.carts[cart[1]]=cart[0];
         setCartToLocalStorage(state.carts);
     }
   },

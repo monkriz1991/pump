@@ -27,8 +27,9 @@
 
 
  <v-spacer></v-spacer>
-
-         <v-tooltip bottom>
+         
+        
+            <v-menu offset-y :close-on-click="false" :close-on-content-click="false" >
             <template v-slot:activator="{ on, attrs }">
                <v-badge
           color="red"
@@ -40,13 +41,14 @@
          v-bind="attrs"
           v-on="on"
         >
-        fas fa-shopping-cart</v-icon>
+        fa-shopping-cart</v-icon>
         
                </v-badge>
             </template>
-             <span>Корзина товаров</span>
-         </v-tooltip>
-
+        <cartmodal />
+             </v-menu>
+            
+         
         <v-spacer></v-spacer>
         <div v-if="$auth.loggedIn">
             <menuuser />
@@ -90,12 +92,13 @@
 import ClickOutside from 'vue-click-outside'
 import logindialog from '@/components/modal/login_dialog.vue'
 import menuuser from '@/components/user/menu_user.vue'
-import { mapGetters } from "vuex";
+import cartmodal from '@/components/modal/cart_modal/cart_modal.vue'
 
   export default {
     components:{
       logindialog,
       menuuser,
+      cartmodal,
     },
     data () {
       return {
