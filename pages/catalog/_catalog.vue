@@ -168,7 +168,6 @@ export default {
   
     async asyncData({store, params}){
         const product = await store.dispatch('products/getProductFromServer',{"limit":12,"offset":0,"cat":params.catalog});
-        //const filters = await store.dispatch('categories/getsecondCategoryWithFilters',params.catalog);
         const filters = await store.dispatch('categories/getCatWithSecondCat',params.catalog);
         const hachatgs = product.results
         const count_pages = product.count
@@ -225,8 +224,12 @@ export default {
         let a = await this.$store.dispatch('products/getProductFromServer',{"limit":12,"offset":nextOffset,"cat":this.params.catalog,"second_cat":z.second_cat,"filter":z.filter});
         this.hachatgs = a.results;
         this.count_pages = a.count;
+        document.location.replace( window.location.protocol + '//' + window.location.host + window.location.pathname+`?cat_second=${JSON.stringify(z.second_cat)}`);
         this.countPages()
       },
+      /**
+       * переход на страницу продукта
+       */
         openProduct(id){
             this.$router.push('/products/'+id)
         },
@@ -271,7 +274,7 @@ export default {
          this.nextPage({second_cat:[],filter:cartfilter});
         },
         /**
-         * добавление товара в корзину
+         * добавление товара в корзину с валидацией
          */
         sendToCart(cardid,productid){
           let copied =  JSON.parse(JSON.stringify(this.hachatgs)); // глубокое копированиек объекта
@@ -280,6 +283,18 @@ export default {
               return value.id == productid;
           });
           card.product = filtered;
+          if(card.counter_cart=="0"){
+              alert("Выберите количество больше нуля");
+              return;
+          }
+          if(parseInt(card.product[0].count)==0){
+            alert('Товар отсутсвует');
+            return;
+          }
+          if(parseInt(card.product[0].count)<parseInt(card.counter_cart)){
+            alert('Недопустимое количество товара');
+            return;
+          }
           this.$store.commit('cart/addCart',card);
         }
     },
