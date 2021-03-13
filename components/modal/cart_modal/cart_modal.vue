@@ -39,6 +39,8 @@
             <div v-else>
               <v-row dense>
                   <div class="nothing">Ничего не добавлено</div>
+                  
+                    
               </v-row>
               </div>
           <v-card-text>
