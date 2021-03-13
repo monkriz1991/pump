@@ -102,21 +102,22 @@
                               {{n.name }}
                           </a>
                           <div class="catalog-cart-price">
-                            <span>{{ n.s1_id || 'null' }}</span><strong>руб./м</strong>
+                            <span>{{ n.selected_child? n.product.find(x=>x.id==n.selected_child)['price']: '-' }}</span><strong>руб./м</strong>
+                            <span>{{ n.selected_child? n.product.find(x=>x.id==n.selected_child)['count']: '-' }}</span><strong>кол-во</strong>
                           </div>
                           <div class="catalog-cart-bottom">
                             <div class="catalog-cart-type">
                               Размер:
                             </div>
                             <v-radio-group
-                            v-model="n.s1_id"
+                            v-model="n.selected_child"
                             :mandatory="true">
                             <v-row>
                               <v-radio 
-                                v-for="cd in n.product"
-                                :key="cd.id"
-                                :label="`${cd.price}`"
-                                :value="cd.price"
+                                v-for="(cd,i) in n.product"
+                                :key="i"
+                                :label="`${cd.name} ${cd.price}`"
+                                :value="cd.id"
                               ></v-radio>
                             </v-row>
                             </v-radio-group>
@@ -127,6 +128,7 @@
                                 min="0"
                                 step="1"
                                 value="1"
+                                :max="n.selected_child? n.product.find(x=>x.id==n.selected_child)['count']: '0'"
                                 single-line
                                 type="number"
                               />
@@ -134,6 +136,7 @@
                             <v-btn
                               depressed
                               small
+                              @click="sendToCart(this,n.id)"
                             >В корзину</v-btn>
                           </div>
                         </div>
@@ -226,6 +229,9 @@ export default {
         openProduct(id){
             this.$router.push('/products/'+id)
         },
+        /**
+         * сортировка товара по подкатиегориям
+         */
         checkFilter(e,f){
           this.page = 1;
           let filter = {};
@@ -239,6 +245,9 @@ export default {
           
          this.nextPage({second_cat:cartfilter,filter:[]});
         },
+        /**
+         * сортировка товара по флитрам
+         */
          checkFilterCat(e,f){
            this.page = 1;
           let filter = {};
@@ -259,6 +268,13 @@ export default {
             result.push({"parent":fil,"list":filter[fil]});
           }
          this.nextPage({second_cat:[],filter:cartfilter});
+        },
+        /**
+         * добавление товара в корзину
+         */
+        sendToCart(id){
+          let res = this.hachatgs.find(x=>x.id==id);
+          this.$store.commit('cart/addCart',res);
         }
     },
     created() {
