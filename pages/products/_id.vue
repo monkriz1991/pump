@@ -69,6 +69,8 @@
       }
     },
     mounted(){
+      this.$store.dispatch('lastproducts/setProduct',this.product);
+      console.log(this.$last10product());
       //imgSlide(product_img){
         // this.product_img = img;
         //  console.log(product_img)
