@@ -5,13 +5,14 @@
               <v-row  dense>
                 <v-col v-for="(cart,is1) in cartsClone" :key="is1" cols="12">
                   <v-card
-                    color="#385F73"
+                   
                     dark
                   >
+                  <div class="d-flex flex-no-wrap justify-space-between">
+              <div>
                       <v-card-title class="headline">
                         {{cart.name}}
                       </v-card-title>
-
                       <v-card-subtitle>
                           {{cart.product[0].name}} - {{cart.counter_cart}} x {{cart.product[0].price}} = {{cart.product[0].price*cart.counter_cart}}
                           <hr>
@@ -26,12 +27,18 @@
                         ></v-slider>
                           </v-card-subtitle>
                         
-                      <v-card-actions>
-                                          
+                      <v-card-actions>                                        
                           <div><v-icon @click="delCart(cart.product[0].id)">fa-trash</v-icon></div>
-                         
-                       
                       </v-card-actions>
+              </div>
+                      <v-avatar
+                class="ma-3"
+                size="125"
+                tile
+              >
+                <v-img :src="cart.img"></v-img>
+              </v-avatar>
+                  </div>
                 </v-card>
             </v-col>
               </v-row>
