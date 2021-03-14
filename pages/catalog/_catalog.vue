@@ -136,10 +136,13 @@
                               />
                             </div>
                             <v-btn
+                            v-model="incart[n.selected_child]"
                               depressed
                               small
+                              :color="incart[n.selected_child]?'':'#519d5e'"
                               @click="sendToCart(n.id,n.selected_child)"
-                            >В корзину <v-icon small>fa-cart-plus</v-icon></v-btn>
+                              v-bind:disabled="incart[n.selected_child]"
+                            ><span v-if="!incart[n.selected_child]">В корзину <v-icon small>fa-cart-plus</v-icon></span> <span v-else>Добавлено</span> </v-btn>
                           </div>
                         </div>
                         </v-sheet>
@@ -188,6 +191,7 @@ export default {
         second_cat:[],
           hachatgs:[],
           enabled:[],
+          incart:[],
           enabled_filter:[],
           page: 1,
           loading:true,
@@ -213,13 +217,34 @@ export default {
     components: {
       VueContentLoading,
     },
+    watch:{
+        carts (newCount, oldCount) {
+          this.productInCart();
+      this.cartsClone =  JSON.parse(JSON.stringify(newCount));
+        }      
+    },
     mounted(){
+      this.$store.commit('cart/updateCarts');
+       this.productInCart();
+       console.log(this.incart);
       setTimeout(() =>{
         this.setLoadingState(false)
         this.setLoadingDesc(true)
       },900)
     },
+    computed:{
+      carts () {
+        //this.productInCart();
+      return this.$store.state.cart.carts
+    },
+    },
     methods: {
+      productInCart(){
+        this.incart = [];
+        for(let i of this.carts){
+          this.incart[i.product[0].id] = true;
+        }
+      },
       setLoadingState(state){
         this.loading = state
       },
@@ -241,6 +266,7 @@ export default {
         this.hachatgs = a.results;
         this.count_pages = a.count;
         history.pushState(null, null, window.location.protocol + '//' + window.location.host + window.location.pathname+`?page=${this.page}${z.second_cat && z.second_cat.length?`&cat_second=${JSON.stringify(z.second_cat)}`:''}`);
+        this.productInCart();
         this.countPages()
       },
       /**
@@ -316,6 +342,7 @@ export default {
             return;
           }
           this.$store.commit('cart/addCart',card);
+          this.productInCart();
         }
     },
     created() {
