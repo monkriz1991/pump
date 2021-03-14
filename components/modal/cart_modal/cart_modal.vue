@@ -86,8 +86,9 @@ export default({
     total(){
         let totals = 0;
         for(let i of this.cartsClone){
-          totals += this.roleRoundProce((i.product[0].price)*i.counter_cart);
+          totals += +((i.product[0].price)*i.counter_cart);
       }
+      totals = this.roleRoundProce(totals);
       return totals;
     }
     },
