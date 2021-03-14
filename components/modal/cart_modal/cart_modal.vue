@@ -1,9 +1,10 @@
 <template>
-    <div>
-        <v-card max-height="300" max-width="500" dark class="mx-auto">
+    <div class="layer">
+         <v-app>
+        <v-card  dark class="mx-auto">
             <div v-if="cartsClone.length">
-              <v-row  dense>
-                <v-col v-for="(cart,is1) in cartsClone" :key="is1" cols="12">
+              <v-row v-for="(cart,is1) in cartsClone" :key="is1"  dense>
+                <v-col  cols="12">
                   <v-card
                    
                     dark
@@ -42,9 +43,13 @@
                 </v-card>
             </v-col>
               </v-row>
-              <v-row class="nothing">
+              <div class="nothing">
+              <v-row>
+                  <v-col  cols="12">
                   скидка 0% Итог - {{total}}
+                  </v-col>
               </v-row>
+              </div>
               </div>
             <div v-else>
               <v-row dense>
@@ -62,6 +67,7 @@
             <v-btn color="error">Купить</v-btn>
           </v-card-actions>
         </v-card>
+         </v-app>
     </div>
 </template>
 
@@ -121,7 +127,26 @@ export default({
 </script>
 <style scoped>
 .nothing{
+    background-color: black;
     margin-top: 10%;
     padding-left: 22%;
 }
+.cart-card{
+    background-color: coral;
+}
+.v-card {
+  display: flex !important;
+  flex-direction: column;
+}
+
+.v-card__text {
+  flex-grow: 1;
+  overflow: auto;
+}
+.layer {
+    overflow: scroll; /* Добавляем полосы прокрутки */
+    width: 500px; /* Ширина блока */
+    height: 400px; /* Высота блока */
+    padding-right: 0;
+   } 
 </style>
