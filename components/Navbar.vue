@@ -29,7 +29,7 @@
  <v-spacer></v-spacer>
          
         
-            <v-menu offset-y :close-on-click="false" :close-on-content-click="false" >
+            <v-menu offset-y  :close-on-content-click="false" >
             <template v-slot:activator="{ on, attrs }">
                <v-badge
           color="red"
