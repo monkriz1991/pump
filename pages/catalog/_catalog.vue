@@ -226,7 +226,6 @@ export default {
     mounted(){
       this.$store.commit('cart/updateCarts');
        this.productInCart();
-       console.log(this.incart);
       setTimeout(() =>{
         this.setLoadingState(false)
         this.setLoadingDesc(true)
@@ -253,12 +252,10 @@ export default {
       },
       countPages(hachatgs){
         this.count_page = Math.ceil(this.count_pages/12);
-        console.log(this.count_pages);
       },
       async nextPage(z = {second_cat:[],filter:[]}){
         if(z['second_cat'] == undefined){
           z = {second_cat:[],filter:[]};
-          console.log(this.$route);
           z.second_cat = this.second_cat;
         }
         const nextOffset = (this.page-1)*12   
