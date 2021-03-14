@@ -14,7 +14,7 @@
                         {{cart.name}}
                       </v-card-title>
                       <v-card-subtitle>
-                          {{cart.product[0].name}} - {{cart.counter_cart}} x {{cart.product[0].price}} = {{cart.product[0].price*cart.counter_cart}}
+                          {{cart.product[0].name}} - {{cart.counter_cart}} x {{cart.product[0].price}} = {{roleRoundProce(cart.product[0].price*cart.counter_cart)}}
                           <hr>
                           <v-slider
                         v-model="cart.counter_cart"
@@ -41,6 +41,9 @@
                   </div>
                 </v-card>
             </v-col>
+              </v-row>
+              <v-row class="nothing">
+                  скидка 0% Итог - {{total}}
               </v-row>
               </div>
             <div v-else>
@@ -80,12 +83,21 @@ export default({
     carts () {
       return this.$store.state.cart.carts
     },
+    total(){
+        let totals = 0;
+        for(let i of this.cartsClone){
+          totals += this.roleRoundProce((i.product[0].price)*i.counter_cart);
+      }
+      return totals;
+    }
     },
     watch:{
         carts (newCount, oldCount) {
       console.log(`We have ${newCount} fruits now, yay!`);
-      this.cartsClone =  newCount;
-    }
+      this.cartsClone =  JSON.parse(JSON.stringify(newCount));
+      
+      
+    },
     },
     methods:{
         async delCart(id){
@@ -94,8 +106,15 @@ export default({
         },
          updateCart(cart,i){
             this.$store.commit('cart/updateCart', [cart,i]);
-            
         },
+        roleRoundProce(oldprice){
+            let price = oldprice;
+            for(let i=100000000;i>99;i=i/10){
+                price =  Math.round(price*i)/i;
+                console.log(price);
+            }
+            return price.toFixed(2);
+        }
     },
 })
 </script>
