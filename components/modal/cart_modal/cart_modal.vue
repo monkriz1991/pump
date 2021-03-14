@@ -41,7 +41,7 @@
                   <div class="nothing">Ничего не добавлено</div>
                   
                     
-                    
+
               </v-row>
               </div>
           <v-card-text>
@@ -64,6 +64,7 @@ export default({
         }
     },
     mounted () {
+        
      this.$store.commit('cart/updateCarts');
     this.cartsClone = JSON.parse(JSON.stringify(this.carts));
 
@@ -72,6 +73,12 @@ export default({
     carts () {
       return this.$store.state.cart.carts
     },
+    },
+    watch:{
+        carts (newCount, oldCount) {
+      console.log(`We have ${newCount} fruits now, yay!`);
+      this.cartsClone =  newCount;
+    }
     },
     methods:{
         async delCart(id){
