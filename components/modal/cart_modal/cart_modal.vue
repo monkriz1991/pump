@@ -100,7 +100,6 @@ export default({
     },
     watch:{
         carts (newCount, oldCount) {
-      console.log(`We have ${newCount} fruits now, yay!`);
       this.cartsClone =  JSON.parse(JSON.stringify(newCount));
       
       
@@ -118,7 +117,6 @@ export default({
             let price = oldprice;
             for(let i=100000000;i>99;i=i/10){
                 price =  Math.round(price*i)/i;
-                console.log(price);
             }
             return price.toFixed(2);
         }
