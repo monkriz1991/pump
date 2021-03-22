@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <Navbar/>
+    <Navbarmy/>
     <nuxt/>
     
     <Footer/>
@@ -13,8 +13,9 @@ import Navbar from '@/components/Navbar.vue'
 import Footer from '@/components/Footer.vue'
 
 export default {
+  name:"def",
  components: {
-   Navbar,
+   Navbarmy:Navbar,
    Footer
  }, 
 }

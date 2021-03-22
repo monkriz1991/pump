@@ -102,39 +102,47 @@
                               {{n.name }}
                           </a>
                           <div class="catalog-cart-price">
-                            <span>{{ n.s1_id || 'null' }}</span><strong>руб./м</strong>
+                            <span>{{ n.selected_child? n.product.find(x=>x.id==n.selected_child)['price']: '-' }}</span><strong>руб./м</strong>
+                            <span>{{ n.selected_child? n.product.find(x=>x.id==n.selected_child)['count']: '-' }}</span><strong>кол-во</strong>
                           </div>
                           <div class="catalog-cart-bottom">
                             <div class="catalog-cart-type">
                               Размер:
                             </div>
                             <v-radio-group
-                            v-model="n.s1_id"
+                            v-model="n.selected_child"
                             :mandatory="true">
                             <v-row>
                               <v-radio 
-                                v-for="cd in n.product"
-                                :key="cd.id"
-                                :label="`${cd.price}`"
-                                :value="cd.price"
+                                v-for="(cd,i) in n.product"
+                                :key="i"
+                                :label="`${cd.name} ${cd.price}`"
+                                :value="cd.id"
+                                :disabled="cd.count?false:true"
                               ></v-radio>
                             </v-row>
                             </v-radio-group>
                             <div class="catalog-cart-calc">
                               <v-text-field
-                                
+                                v-model="n.counter_cart"
                                 hide-details
                                 min="0"
                                 step="1"
-                                value="1"
+                                :value="n.counter_cart?n.counter_cart:n.counter_cart=1"
+                                :mandatory="true"
+                                :max="n.selected_child?n.product.find(x=>x.id==n.selected_child)['count']: '0'"
                                 single-line
                                 type="number"
                               />
                             </div>
                             <v-btn
+                            v-model="incart[n.selected_child]"
                               depressed
                               small
-                            >В корзину</v-btn>
+                              :color="incart[n.selected_child]?'':'#519d5e'"
+                              @click="sendToCart(n.id,n.selected_child)"
+                              v-bind:disabled="incart[n.selected_child]"
+                            ><span v-if="!incart[n.selected_child]">В корзину <v-icon small>fa-cart-plus</v-icon></span> <span v-else>Добавлено</span> </v-btn>
                           </div>
                         </div>
                         </v-sheet>
@@ -162,18 +170,28 @@
 import VueContentLoading from 'vue-content-loading';
 export default {
   
-    async asyncData({store, params}){
-        const product = await store.dispatch('products/getProductFromServer',{"limit":12,"offset":0,"cat":params.catalog});
-        //const filters = await store.dispatch('categories/getsecondCategoryWithFilters',params.catalog);
+    async asyncData({store, params,route}){
+      let enabled=[];
+        let page = route.query.page?parseInt(route.query.page):1;
+        let cat_second = route.query.cat_second?JSON.parse(route.query.cat_second):[];
+        let offset = (page-1)*12;
+        const product = await store.dispatch('products/getProductFromServer',{"limit":12,"offset":offset,"cat":params.catalog,"second_cat":cat_second});
         const filters = await store.dispatch('categories/getCatWithSecondCat',params.catalog);
+        for(let f in filters){
+          if(cat_second.includes(filters[f].id)){
+            enabled[f] = filters[f].id;
+          }
+        }
         const hachatgs = product.results
         const count_pages = product.count
-        return {hachatgs,count_pages,params, filters}
+        return {hachatgs,count_pages,params, filters, page, enabled}
     },
     data () {
       return {
+        second_cat:[],
           hachatgs:[],
           enabled:[],
+          incart:[],
           enabled_filter:[],
           page: 1,
           loading:true,
@@ -199,13 +217,33 @@ export default {
     components: {
       VueContentLoading,
     },
+    watch:{
+        carts (newCount, oldCount) {
+          this.productInCart();
+      this.cartsClone =  JSON.parse(JSON.stringify(newCount));
+        }      
+    },
     mounted(){
+      this.$store.commit('cart/updateCarts');
+       this.productInCart();
       setTimeout(() =>{
         this.setLoadingState(false)
         this.setLoadingDesc(true)
       },900)
     },
+    computed:{
+      carts () {
+        //this.productInCart();
+      return this.$store.state.cart.carts
+    },
+    },
     methods: {
+      productInCart(){
+        this.incart = [];
+        for(let i of this.carts){
+          this.incart[i.product[0].id] = true;
+        }
+      },
       setLoadingState(state){
         this.loading = state
       },
@@ -214,18 +252,29 @@ export default {
       },
       countPages(hachatgs){
         this.count_page = Math.ceil(this.count_pages/12);
-        console.log(this.count_pages);
       },
       async nextPage(z = {second_cat:[],filter:[]}){
+        if(z['second_cat'] == undefined){
+          z = {second_cat:[],filter:[]};
+          z.second_cat = this.second_cat;
+        }
         const nextOffset = (this.page-1)*12   
         let a = await this.$store.dispatch('products/getProductFromServer',{"limit":12,"offset":nextOffset,"cat":this.params.catalog,"second_cat":z.second_cat,"filter":z.filter});
         this.hachatgs = a.results;
         this.count_pages = a.count;
+        history.pushState(null, null, window.location.protocol + '//' + window.location.host + window.location.pathname+`?page=${this.page}${z.second_cat && z.second_cat.length?`&cat_second=${JSON.stringify(z.second_cat)}`:''}`);
+        this.productInCart();
         this.countPages()
       },
+      /**
+       * переход на страницу продукта
+       */
         openProduct(id){
             this.$router.push('/products/'+id)
         },
+        /**
+         * сортировка товара по подкатиегориям
+         */
         checkFilter(e,f){
           this.page = 1;
           let filter = {};
@@ -236,9 +285,12 @@ export default {
             }
            
           }
-          
+          this.second_cat = cartfilter;
          this.nextPage({second_cat:cartfilter,filter:[]});
         },
+        /**
+         * сортировка товара по флитрам
+         */
          checkFilterCat(e,f){
            this.page = 1;
           let filter = {};
@@ -258,11 +310,40 @@ export default {
           for(let fil in filter){
             result.push({"parent":fil,"list":filter[fil]});
           }
-         this.nextPage({second_cat:[],filter:cartfilter});
+         this.nextPage({second_cat:this.second_cat,filter:cartfilter});
+        },
+        /**
+         * добавление товара в корзину с валидацией
+         */
+        sendToCart(cardid,productid){
+          let copied =  JSON.parse(JSON.stringify(this.hachatgs)); // глубокое копированиек объекта
+          let card = copied.find(x=>x.id==cardid);
+          var filtered = card.product.filter(function(value, index, arr){ 
+              return value.id == productid;
+          });
+          card.product = filtered;
+          if(!card.product.length){
+            alert("Товар отсутсвует");
+            return;
+          }
+          if(card.counter_cart=="0"){
+              alert("Выберите количество больше нуля");
+              return;
+          }
+          if(parseInt(card.product[0].count)==0){
+            alert('Товар отсутсвует');
+            return;
+          }
+          if(parseInt(card.product[0].count)<parseInt(card.counter_cart)){
+            alert('Недопустимое количество товара');
+            return;
+          }
+          this.$store.commit('cart/addCart',card);
+          this.productInCart();
         }
     },
     created() {
-        // this.getHachtags()
+       this.second_cat = this.$route.query.cat_second?JSON.parse(this.$route.query.cat_second):[];
         this.countPages()
     }
   }

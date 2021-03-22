@@ -24,8 +24,31 @@
           text class="btn-header-link"
         > {{ link.title }}
         </v-btn>
-        
 
+
+ <v-spacer></v-spacer>
+         
+        
+            <v-menu offset-y  :close-on-content-click="false" >
+            <template v-slot:activator="{ on, attrs }">
+               <v-badge
+          color="red"
+          v-bind:content="counter"
+           v-bind:value="(counter>0)?true:false"
+        >
+        <v-icon 
+        @click="modal_cart = true" 
+         v-bind="attrs"
+          v-on="on"
+        >
+        fa-shopping-cart</v-icon>
+        
+               </v-badge>
+            </template>
+        <cartmodal />
+             </v-menu>
+            
+         
         <v-spacer></v-spacer>
         <div v-if="$auth.loggedIn">
             <menuuser />
@@ -69,15 +92,18 @@
 import ClickOutside from 'vue-click-outside'
 import logindialog from '@/components/modal/login_dialog.vue'
 import menuuser from '@/components/user/menu_user.vue'
+import cartmodal from '@/components/modal/cart_modal/cart_modal.vue'
 
   export default {
     components:{
       logindialog,
       menuuser,
+      cartmodal,
     },
     data () {
       return {
         category:[],
+        modal_cart:false,
         //menyHeader: false,
         opened: false,
         links: [
@@ -108,11 +134,13 @@ import menuuser from '@/components/user/menu_user.vue'
       // }
     },
     mounted () {
-      // prevent click outside event with popupItem.
-     // this.popupItem = this.$el
-     console.log(this.$auth.user);
+     this.$store.commit('cart/getCounterCart');
     },
- 
+    computed: {
+    counter () {
+      return this.$store.state.cart.counter
+    },
+  },
     directives: {
       ClickOutside
     }
